@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Arcade</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #101827;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: #080e19;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h2 {
+  margin: 0;
+  color: #38bdf8;
+}
+
+nav button, button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 11px 17px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 3px;
+}
+
+button:hover {
+  background: #0ea5e9;
+}
+
+main {
+  max-width: 1100px;
+  margin: auto;
+  padding: 25px;
+}
+
+h1 {
+  font-size: 36px;
+}
+
+.search {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  margin: 15px 0 25px;
+  font-size: 16px;
+}
+
+.games {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 15px;
+}
+
+.game {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 25px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.game:hover {
+  transform: translateY(-5px);
+  border-color: #38bdf8;
+}
+
+.game .emoji {
+  font-size: 42px;
+}
+
+.game h3 {
+  margin-bottom: 0;
+}
+
+.panel {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 35px;
+}
+
+input {
+  padding: 12px;
+  border-radius: 7px;
+  border: none;
+  margin: 5px;
+  max-width: 100%;
+}
+
+.flashcard {
+  background: #334155;
+  padding: 35px;
+  border-radius: 12px;
+  text-align: center;
+  margin: 20px 0;
+  min-height: 130px;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.hidden {
+  display: none;
+}
+
+footer {
+  text-align: center;
+  padding: 30px;
+  color: #94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🎮 MY ARCADE</h2>
+  <nav>
+    <button onclick="showHome()">HOME</button>
+    <button onclick="showFlashcards()">FLASHCARDS</button>
+  </nav>
+</header>
+
+<main>
+
+<section id="home">
+  <h1>Welcome to My Arcade!</h1>
+  <p>Choose a game and have fun.</p>
+
+  <input
+    class="search"
+    id="search"
+    placeholder="🔎 Search games..."
+    oninput="filterGames()"
+  >
+
+  <h2>🎮 GAMES</h2>
+
+  <div class="games" id="games"></div>
+</section>
+
+<section id="flashcards" class="hidden">
+  <h1>📚 Flashcard Creator</h1>
+  <p>Create flashcards and test yourself!</p>
+
+  <div class="panel">
+    <h2>Create a card</h2>
+
+    <input id="question" placeholder="Enter question">
+    <input id="answer" placeholder="Enter answer">
+
+    <button onclick="addCard()">ADD CARD</button>
+  </div>
+
+  <div class="panel">
+    <h2>Your flashcards</h2>
+    <div id="cardCount">0 cards</div>
+
+    <div class="flashcard" id="card" onclick="flipCard()">
+      No flashcards yet!
+    </div>
+
+    <button onclick="previousCard()">PREVIOUS</button>
+    <button onclick="nextCard()">NEXT</button>
+    <button onclick="deleteCard()">DELETE</button>
+  </div>
+</section>
+
+<section id="gamePage" class="hidden">
+  <button onclick="showHome()">← BACK HOME</button>
+  <h1 id="gameTitle">Game</h1>
+  <p id="gameMessage">More games coming soon!</p>
+</section>
+
+</main>
+
+<footer>
+  MY ARCADE © 2026 | No accounts. No passwords. Just fun!
+</footer>
+
+<script>
+const gameList = [
+  ["🏹", "Ragdoll Archers"],
+  ["🐍", "Snake"],
+  ["🧱", "Tetris"],
+  ["🏓", "Pong"],
+  ["🐦", "Flappy Bird"],
+  ["🦖", "Dino Game"],
+  ["💣", "Minesweeper"],
+  ["🚗", "Car Game"],
+  ["🏀", "Basketball"],
+  ["🎲", "Random Games"],
+  ["🏎️", "Racing"],
+  ["🟡", "Pac-Man"]
+];
+
+const games = document.getElementById("games");
+
+function displayGames(list) {
+  games.innerHTML = "";
+
+  list.forEach(game => {
+    const div = document.createElement("div");
+    div.className = "game";
+
+    const emoji = document.createElement("div");
+    emoji.className = "emoji";
+    emoji.textContent = game[0];
+
+    const name = document.createElement("h3");
+    name.textContent = game[1];
+
+    div.append(emoji, name);
+    div.onclick = () => openGame(game[1]);
+
+    games.appendChild(div);
+  });
+}
+
+function filterGames() {
+  const term = document.getElementById("search").value.toLowerCase();
+
+  displayGames(
+    gameList.filter(game => game[1].toLowerCase().includes(term))
+  );
+}
+
+function showHome() {
+  document.getElementById("home").classList.remove("hidden");
+  document.getElementById("flashcards").classList.add("hidden");
+  document.getElementById("gamePage").classList.add("hidden");
+}
+
+function showFlashcards() {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("flashcards").classList.remove("hidden");
+  document.getElementById("gamePage").classList.add("hidden");
+  updateCard();
+}
+
+function openGame(name) {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("flashcards").classList.add("hidden");
+  document.getElementById("gamePage").classList.remove("hidden");
+
+  document.getElementById("gameTitle").textContent = name;
+  document.getElementById("gameMessage").textContent =
+    "This game is coming soon!";
+}
+
+// FLASHCARDS
+
+let cards = JSON.parse(localStorage.getItem("myCards") || "[]");
+let current = 0;
+let flipped = false;
+
+function saveCards() {
+  localStorage.setItem("myCards", JSON.stringify(cards));
+}
+
+function addCard() {
+  const q = document.getElementById("question").value.trim();
+  const a = document.getElementById("answer").value.trim();
+
+  if (!q || !a) {
+    alert("Please enter both a question and answer!");
+    return;
+  }
+
+  cards.push({ question: q, answer: a });
+
+  document.getElementById("question").value = "";
+  document.getElementById("answer").value = "";
+
+  current = cards.length - 1;
+  saveCards();
+  updateCard();
+}
+
+function updateCard() {
+  document.getElementById("cardCount").textContent =
+    cards.length + " cards";
+
+  const card = document.getElementById("card");
+
+  if (cards.length === 0) {
+    card.textContent = "No flashcards yet!";
+    return;
+  }
+
+  current = (current + cards.length) % cards.length;
+  flipped = false;
+  card.textContent = cards[current].question;
+}
+
+function flipCard() {
+  if (!cards.length) return;
+
+  flipped = !flipped;
+
+  document.getElementById("card").textContent =
+    flipped ? cards[current].answer : cards[current].question;
+}
+
+function nextCard() {
+  if (!cards.length) return;
+  current = (current + 1) % cards.length;
+  updateCard();
+}
+
+function previousCard() {
+  if (!cards.length) return;
+  current = (current - 1 + cards.length) % cards.length;
+  updateCard();
+}
+
+function deleteCard() {
+  if (!cards.length) return;
+
+  cards.splice(current, 1);
+  current = Math.max(0, current - 1);
+
+  saveCards();
+  updateCard();
+}
+
+displayGames(gameList);
+updateCard();
+</script>
+
+</body>
+</html>
